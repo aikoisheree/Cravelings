@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cravelings</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka for rounded logo font, Inter for crisp modern UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        logo: ['Fredoka', 'cursive', 'sans-serif'],
+                    },
+                    colors: {
+                        craveRed: '#EF4444',
+                        craveYellow: '#F59E0B',
+                        craveGreen: '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.03); }
+        }
+        .animate-float-slow {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: floatSlow 7s ease-in-out 2s infinite;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .view-enter {
+            animation: fadeSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-800 min-h-screen flex flex-col relative overflow-x-hidden selection:bg-amber-200">
+
+    <!-- Subtle Ambient Floating Blobs -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+        <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#EF4444]/[0.07] blur-3xl animate-float-slow"></div>
+        <div class="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-[#F59E0B]/[0.08] blur-3xl animate-float-delayed"></div>
+        <div class="absolute -bottom-24 left-1/4 w-80 h-80 rounded-full bg-[#10B981]/[0.08] blur-3xl animate-float-slow"></div>
+    </div>
+
+    <!-- Ultra-Minimal Top-Left Brand Header -->
+    <header class="w-full px-6 sm:px-10 pt-6 pb-2 flex items-center justify-start z-20">
+        <button onclick="resetToStart()" class="inline-flex items-center gap-2.5 group focus:outline-none cursor-pointer" aria-label="Cravelings Home">
+            <span class="font-logo text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 group-hover:opacity-85 transition-opacity">
+                Cravelings
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-stone-200/80 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+                <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+            </span>
+        </button>
+    </header>
+
+    <!-- Centered Minimal Stage -->
+    <main class="flex-1 flex items-center justify-center px-4 py-6 sm:p-8">
+        <div class="w-full max-w-md">
+
+            <!-- ========================================== -->
+            <!-- 1. START SCREEN                            -->
+            <!-- ========================================== -->
+            <section id="start-screen" class="view-enter bg-white rounded-[28px] shadow-[0_20px_50px_rgba(28,25,23,0.05)] border border-stone-200/70 p-8 sm:p-11 text-center relative overflow-hidden">
+                <!-- Tactile Tri-Color Emblem -->
+                <div class="w-16 h-16 mx-auto mb-6 rounded-[22px] bg-[#FAF9F6] border border-stone-200/70 flex items-center justify-center relative">
+                    <span class="text-3xl select-none">🍽️</span>
+                    <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#EF4444] ring-4 ring-white"></span>
+                    <span class="absolute -bottom-1 -left-1 w-3.5 h-3.5 rounded-full bg-[#10B981] ring-4 ring-white"></span>
+                </div>
+
+                <h1 class="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight mb-2.5">
+                    Find your next bite
+                </h1>
+                <p class="text-stone-500 text-sm sm:text-base max-w-xs mx-auto mb-8 leading-relaxed">
+                    Ten quick, effortless taps to uncover the exact food you’re craving right now.
+                </p>
+
+                <button onclick="startQuiz()" class="w-full py-4 px-7 rounded-full font-bold text-white text-base bg-gradient-to-r from-[#EF4444] via-[#F59E0B] to-[#10B981] hover:brightness-105 active:scale-[0.98] shadow-md shadow-amber-500/20 transition-all cursor-pointer">
+                    Start finding your craving!
+                </button>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 2. MINIMAL 10-QUESTION CARD                -->
+            <!-- ========================================== -->
+            <section id="quiz-screen" class="hidden bg-white rounded-[28px] shadow-[0_20px_50px_rgba(28,25,23,0.05)] border border-stone-200/70 p-7 sm:p-10">
+                <!-- Minimal 10-Segment Progress Indicator & Back Arrow -->
+                <div class="flex items-center gap-3 mb-9">
+                    <button id="back-btn" onclick="goBack()" aria-label="Previous question" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer shrink-0">
+                        <span class="text-base leading-none">←</span>
+                    </button>
+                    <div class="flex-1 grid grid-cols-10 gap-1.5" id="segmented-progress">
+                        <!-- 10 segments generated dynamically -->
+                    </div>
+                    <span id="progress-count" class="text-xs font-semibold text-stone-400 tabular-nums shrink-0">
+                        1/10
+                    </span>
+                </div>
+
+                <!-- Minimal Question Prompt -->
+                <div class="text-center mb-8">
+                    <div id="question-emoji" class="text-4xl mb-3 select-none">🍫</div>
+                    <h2 id="question-title" class="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+                        Craving something sweet?
+                    </h2>
+                </div>
+
+                <!-- Two Clean, Tactile Pill/Card Buttons -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 3. RESULTS SCREEN                          -->
+            <!-- ========================================== -->
+            <section id="results-screen" class="hidden bg-white rounded-[28px] shadow-[0_20px_50px_rgba(28,25,23,0.05)] border border-stone-200/70 p-7 sm:p-9">
+                <!-- Header Summary -->
+                <div class="text-center mb-6">
+                    <div id="result-badge" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 mb-3">
+                        <span>✨ Your Craving Match</span>
+                    </div>
+                    <h2 id="result-heading" class="text-2xl font-bold text-stone-900 tracking-tight mb-1">
+                        Here is what hits the spot
+                    </h2>
+                    <p id="result-subheading" class="text-stone-500 text-xs sm:text-sm">
+                        Curated around your answers right now.
+                    </p>
+                </div>
+
+                <!-- Selected Accent Tags -->
+                <div id="selected-pills" class="flex flex-wrap justify-center gap-1.5 mb-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Recommendation Cards -->
+                <div id="recommendations-list" class="space-y-3 mb-8">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Start Over Button -->
+                <div class="text-center">
+                    <button onclick="startQuiz()" class="w-full py-3.5 px-7 rounded-full font-bold text-white text-sm sm:text-base bg-gradient-to-r from-[#EF4444] via-[#F59E0B] to-[#10B981] hover:brightness-105 active:scale-[0.98] shadow-md shadow-amber-500/20 transition-all cursor-pointer">
+                        Start over
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        /**
+         * Cravelings Application Logic
+         * 10 ultra-minimal questions mapped 1-to-1 with the 10 hidden recommendation conditions
+         * and persistent localStorage preference memory.
+         */
+
+        const STORAGE_KEY = 'cravelings_taste_history_v2';
+
+        // 10 Minimal Questions (One per hidden condition)
+        const QUESTIONS = [
+            {
+                id: 'sweet',
+                emoji: '🍫',
+                title: 'Craving something sweet?',
+                yesLabel: 'Yes, sweet tooth',
+                noLabel: 'Not really',
+                accent: 'red'
+            },
+            {
+                id: 'spicy',
+                emoji: '🌶️',
+                title: 'Want a spicy kick?',
+                yesLabel: 'Bring the heat',
+                noLabel: 'Keep it mild',
+                accent: 'red'
+            },
+            {
+                id: 'refreshing',
+                emoji: '🍓',
+                title: 'Looking for something refreshing?',
+                yesLabel: 'Cool & crisp',
+                noLabel: 'No thanks',
+                accent: 'green'
+            },
+            {
+                id: 'crunchy',
+                emoji: '🍗',
+                title: 'In the mood for a crunch?',
+                yesLabel: 'Yes, crunchy',
+                noLabel: 'Prefer soft',
+                accent: 'yellow'
+            },
+            {
+                id: 'comfort',
+                emoji: '🍲',
+                title: 'Need some warm comfort food?',
+                yesLabel: 'Cozy & warm',
+                noLabel: 'Not today',
+                accent: 'yellow'
+            },
+            {
+                id: 'affordable',
+                emoji: '🪙',
+                title: 'Keeping it budget-friendly?',
+                yesLabel: 'Yes, affordable',
+                noLabel: 'Flexible',
+                accent: 'green'
+            },
+            {
+                id: 'quick',
+                emoji: '⚡',
+                title: 'Need something super quick?',
+                yesLabel: 'Fast & ready',
+                noLabel: 'I have time',
+                accent: 'yellow'
+            },
+            {
+                id: 'healthy',
+                emoji: '🥗',
+                title: 'Leaning toward healthy options?',
+                yesLabel: 'Light & balanced',
+                noLabel: 'Indulgent is fine',
+                accent: 'green'
+            },
+            {
+                id: 'filling',
+                emoji: '🍛',
+                title: 'Want something extra filling?',
+                yesLabel: 'Hearty & filling',
+                noLabel: 'Just a light bite',
+                accent: 'red'
+            },
+            {
+                id: 'unsure',
+                emoji: '✨',
+                title: 'Still unsure what to eat?',
+                yesLabel: 'Pick for me based on my taste',
+                noLabel: "I'm ready to see my picks",
+                accent: 'neutral'
+            }
+        ];
+
+        // Food recommendations corresponding to the 9 active preference dimensions
+        const DISH_GROUPS = {
+            sweet: {
+                key: 'sweet',
+                tag: 'Sweet',
+                emoji: '🍫',
+                color: 'red',
+                headline: 'Desserts, Chocolate & Sweet Snacks',
+                dishes: ['Warm Chocolate Brownie', 'Strawberry Cream Crepe', 'Salted Caramel Ice Cream']
+            },
+            spicy: {
+                key: 'spicy',
+                tag: 'Spicy',
+                emoji: '🌶️',
+                color: 'red',
+                headline: 'Spicy Noodles or Rice Dishes',
+                dishes: ['Fiery Korean Ramyeon Noodles', 'Spicy Kimchi Fried Rice', 'Chili Garlic Noodle Bowl']
+            },
+            refreshing: {
+                key: 'refreshing',
+                tag: 'Refreshing',
+                emoji: '🥤',
+                color: 'green',
+                headline: 'Fruit, Smoothies & Cold Drinks',
+                dishes: ['Chilled Mango Berry Smoothie', 'Fresh Watermelon & Mint Cup', 'Iced Citrus Green Tea']
+            },
+            crunchy: {
+                key: 'crunchy',
+                tag: 'Crunchy',
+                emoji: '🍗',
+                color: 'yellow',
+                headline: 'Chips, Fried Chicken & Crackers',
+                dishes: ['Crispy Golden Fried Chicken', 'Sea-Salt Kettle Chips & Dip', 'Herbed Crackers & Cheddar']
+            },
+            comfort: {
+                key: 'comfort',
+                tag: 'Comfort',
+                emoji: '🍲',
+                color: 'yellow',
+                headline: 'Warm Meals: Soup or Pasta',
+                dishes: ['Creamy Tomato Soup & Toast', 'Garlic Parmesan Alfredo Pasta', 'Warm Chicken Noodle Soup']
+            },
+            affordable: {
+                key: 'affordable',
+                tag: 'Budget-Friendly',
+                emoji: '🪙',
+                color: 'green',
+                headline: 'Affordable Everyday Meals',
+                dishes: ['Savory Egg & Scallion Rice Bowl', 'Classic Bean & Cheese Burrito', 'Toasted PB & Banana Sandwich']
+            },
+            quick: {
+                key: 'quick',
+                tag: 'Quick',
+                emoji: '⚡',
+                color: 'yellow',
+                headline: 'Fast Food or Ready-to-Eat Meals',
+                dishes: ['Crispy Chicken Wrap', 'Classic Smash Cheeseburger', 'Ready-to-Eat Sushi Roll Box']
+            },
+            healthy: {
+                key: 'healthy',
+                tag: 'Healthy',
+                emoji: '🥗',
+                color: 'green',
+                headline: 'Salads, Fruit Bowls & Balanced Meals',
+                dishes: ['Avocado & Chickpea Crunch Salad', 'Acai & Granola Fruit Bowl', 'Grilled Chicken & Quinoa Bowl']
+            },
+            filling: {
+                key: 'filling',
+                tag: 'Filling',
+                emoji: '🍛',
+                color: 'red',
+                headline: 'Rice Meals, Noodles & Sandwiches',
+                dishes: ['Teriyaki Chicken & Rice Bowl', 'Loaded Turkey & Avocado Club', 'Stir-Fried Beef & Veggie Noodles']
+            }
+        };
+
+        // Popular defaults if user is unsure on their very first visit with no history yet
+        const POPULAR_DEFAULT_PICKS = [
+            {
+                key: 'popular_1',
+                tag: 'Popular Pick',
+                emoji: '🔥',
+                color: 'yellow',
+                headline: 'Honey Garlic Crispy Chicken & Rice Bowl',
+                dishes: ['Crispy Honey-Garlic Chicken & Rice', 'Classic Margherita Flatbread', 'Savory Garlic Stir-Fried Noodles']
+            },
+            {
+                key: 'popular_2',
+                tag: 'Crowd Favorite',
+                emoji: '✨',
+                color: 'green',
+                headline: 'Toasted Panini & Chilled Berry Smoothie',
+                dishes: ['Mozzarella & Pesto Panini', 'Mixed Berry Yogurt Smoothie', 'Soft-Baked Chocolate Chip Cookie']
+            }
+        ];
+
+        // State
+        let currentIndex = 0;
+        let answers = {};
+
+        /* =========================================================
+           LOCAL STORAGE PREFERENCE MEMORY
+           ========================================================= */
+        function getSavedPreferences() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (err) {
+                return {};
+            }
+        }
+
+        function updateSavedPreferences(selectedKeys) {
+            try {
+                const prefs = getSavedPreferences();
+                selectedKeys.forEach(key => {
+                    if (DISH_GROUPS[key]) {
+                        prefs[key] = (prefs[key] || 0) + 1;
+                    }
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+            } catch (err) {
+                // Fail silently if localStorage is unavailable
+            }
+        }
+
+        /* =========================================================
+           VIEW & QUIZ NAVIGATION
+           ========================================================= */
+        function showScreen(screenId) {
+            ['start-screen', 'quiz-screen', 'results-screen'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                el.classList.remove('view-enter');
+            });
+            const target = document.getElementById(screenId);
+            target.classList.remove('hidden');
+            void target.offsetWidth;
+            target.classList.add('view-enter');
+        }
+
+        function resetToStart() {
+            currentIndex = 0;
+            answers = {};
+            showScreen('start-screen');
+        }
+
+        function startQuiz() {
+            currentIndex = 0;
+            answers = {};
+            showScreen('quiz-screen');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = QUESTIONS[currentIndex];
+            const total = QUESTIONS.length;
+
+            // Update progress count
+            document.getElementById('progress-count').textContent = `${currentIndex + 1}/${total}`;
+
+            // Render 10-segment progress indicator
+            const progressContainer = document.getElementById('segmented-progress');
+            progressContainer.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const seg = document.createElement('div');
+                let colorClass = 'bg-stone-200/80';
+                if (i <= currentIndex) {
+                    if (i < 3) colorClass = 'bg-[#EF4444]';
+                    else if (i < 7) colorClass = 'bg-[#F59E0B]';
+                    else colorClass = 'bg-[#10B981]';
+                }
+                seg.className = `h-1.5 rounded-full transition-all duration-300 ${colorClass}`;
+                progressContainer.appendChild(seg);
+            }
+
+            // Update Back button state
+            const backBtn = document.getElementById('back-btn');
+            if (currentIndex === 0) {
+                backBtn.classList.add('opacity-30', 'pointer-events-none');
+            } else {
+                backBtn.classList.remove('opacity-30', 'pointer-events-none');
+            }
+
+            // Update question emoji & title
+            document.getElementById('question-emoji').textContent = q.emoji;
+            document.getElementById('question-title').textContent = q.title;
+
+            // Render two minimal pill/card options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const choices = [
+                { value: true, label: q.yesLabel, isPrimary: true },
+                { value: false, label: q.noLabel, isPrimary: false }
+            ];
+
+            choices.forEach(choice => {
+                const isSelected = answers[q.id] === choice.value;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `w-full py-4 px-6 rounded-2xl border-2 font-semibold text-base transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-between ${getButtonClasses(q.accent, choice.isPrimary, isSelected)}`;
+                btn.onclick = () => selectOption(q.id, choice.value);
+
+                btn.innerHTML = `
+                    <span>${choice.label}</span>
+                    <span class="w-2.5 h-2.5 rounded-full ${getDotClass(q.accent, choice.isPrimary, isSelected)}"></span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function getButtonClasses(accent, isPrimary, isSelected) {
+            if (!isPrimary) {
+                return isSelected
+                    ? 'border-stone-700 bg-stone-100 text-stone-900'
+                    : 'border-stone-200/80 bg-[#FAF9F6] text-stone-600 hover:border-stone-300 hover:bg-stone-100/70';
+            }
+
+            if (accent === 'red') {
+                return isSelected
+                    ? 'border-[#EF4444] bg-red-50 text-red-900 ring-2 ring-[#EF4444]/20'
+                    : 'border-stone-200/90 bg-white text-stone-900 hover:border-[#EF4444] hover:bg-red-50/40';
+            }
+            if (accent === 'yellow') {
+                return isSelected
+                    ? 'border-[#F59E0B] bg-amber-50 text-amber-950 ring-2 ring-[#F59E0B]/20'
+                    : 'border-stone-200/90 bg-white text-stone-900 hover:border-[#F59E0B] hover:bg-amber-50/40';
+            }
+            if (accent === 'green') {
+                return isSelected
+                    ? 'border-[#10B981] bg-emerald-50 text-emerald-950 ring-2 ring-[#10B981]/20'
+                    : 'border-stone-200/90 bg-white text-stone-900 hover:border-[#10B981] hover:bg-emerald-50/40';
+            }
+            return isSelected
+                ? 'border-stone-800 bg-stone-900 text-white'
+                : 'border-stone-200/90 bg-white text-stone-900 hover:border-stone-400 hover:bg-stone-50';
+        }
+
+        function getDotClass(accent, isPrimary, isSelected) {
+            if (!isPrimary) return isSelected ? 'bg-stone-600' : 'bg-stone-300/70';
+            if (accent === 'red') return 'bg-[#EF4444]';
+            if (accent === 'yellow') return 'bg-[#F59E0B]';
+            if (accent === 'green') return 'bg-[#10B981]';
+            return isSelected ? 'bg-white' : 'bg-stone-400';
+        }
+
+        function selectOption(questionId, value) {
+            answers[questionId] = value;
+            renderQuestion();
+
+            setTimeout(() => {
+                if (currentIndex < QUESTIONS.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    computeRecommendations();
+                }
+            }, 130);
+        }
+
+        function goBack() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        /* =========================================================
+           INVISIBLE RECOMMENDATION & MEMORY ENGINE
+           ========================================================= */
+        function computeRecommendations() {
+            const activeKeys = ['sweet', 'spicy', 'refreshing', 'crunchy', 'comfort', 'affordable', 'quick', 'healthy', 'filling']
+                .filter(key => answers[key] === true);
+
+            const isUnsure = answers.unsure === true;
+
+            // Save explicit positive choices from this session to localStorage
+            if (activeKeys.length > 0) {
+                updateSavedPreferences(activeKeys);
+            }
+
+            let finalKeys = [...activeKeys];
+            let usedHistory = false;
+
+            // If user is unsure (or answered "No" to everything), blend in top saved preferences
+            if (isUnsure || finalKeys.length === 0) {
+                const savedPrefs = getSavedPreferences();
+                const topHistoryKeys = Object.entries(savedPrefs)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([key]) => key)
+                    .filter(key => DISH_GROUPS[key] && !finalKeys.includes(key));
+
+                if (topHistoryKeys.length > 0) {
+                    finalKeys = [...topHistoryKeys.slice(0, 3), ...finalKeys];
+                    usedHistory = true;
+                }
+            }
+
+            const uniqueKeys = [...new Set(finalKeys)];
+            let cardsToRender = [];
+
+            if (uniqueKeys.length > 0) {
+                cardsToRender = uniqueKeys.slice(0, 4).map(key => {
+                    const group = DISH_GROUPS[key];
+                    return {
+                        ...group,
+                        tag: (isUnsure && usedHistory) ? `${group.tag} · Your Favorite` : group.tag
+                    };
+                });
+            } else {
+                cardsToRender = POPULAR_DEFAULT_PICKS;
+            }
+
+            renderResults(cardsToRender, isUnsure, usedHistory);
+        }
+
+        function renderResults(cards, isUnsure, usedHistory) {
+            const badge = document.getElementById('result-badge');
+            const heading = document.getElementById('result-heading');
+            const subheading = document.getElementById('result-subheading');
+            const pillsContainer = document.getElementById('selected-pills');
+            const listContainer = document.getElementById('recommendations-list');
+
+            if (isUnsure && usedHistory) {
+                badge.innerHTML = '<span>✨ Picked From Your Taste History</span>';
+                badge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 mb-3';
+                heading.textContent = 'Popular favorites tailored to you';
+                subheading.textContent = 'Based on what you’ve enjoyed in past sessions.';
+            } else if (isUnsure) {
+                badge.innerHTML = '<span>🌟 Popular Crowd-Pleasers</span>';
+                badge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 mb-3';
+                heading.textContent = 'Easy favorites for right now';
+                subheading.textContent = 'Can’t-miss picks whenever nothing specific comes to mind.';
+            } else {
+                badge.innerHTML = '<span>✨ Your Craving Match</span>';
+                badge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 mb-3';
+                heading.textContent = 'Here is what hits the spot';
+                subheading.textContent = 'Matched to your answers right now.';
+            }
+
+            // Render accent tags
+            pillsContainer.innerHTML = '';
+            cards.forEach(card => {
+                const pillStyles = {
+                    red: 'bg-red-50 text-red-700 border-red-200/80',
+                    yellow: 'bg-amber-50 text-amber-800 border-amber-200/80',
+                    green: 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                };
+                const pill = document.createElement('span');
+                pill.className = `px-3 py-1 rounded-full text-xs font-semibold border ${pillStyles[card.color] || pillStyles.green}`;
+                pill.textContent = `${card.emoji} ${card.tag}`;
+                pillsContainer.appendChild(pill);
+            });
+
+            // Render dish recommendation cards
+            listContainer.innerHTML = '';
+            cards.forEach(card => {
+                const borderStyles = {
+                    red: 'border-red-200/80 bg-red-50/25',
+                    yellow: 'border-amber-200/80 bg-amber-50/25',
+                    green: 'border-emerald-200/80 bg-emerald-50/25'
+                };
+                const badgeStyles = {
+                    red: 'bg-[#EF4444] text-white',
+                    yellow: 'bg-[#F59E0B] text-white',
+                    green: 'bg-[#10B981] text-white'
+                };
+
+                const itemEl = document.createElement('div');
+                itemEl.className = `rounded-2xl border p-4 transition-all ${borderStyles[card.color] || borderStyles.green}`;
+                itemEl.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl select-none">${card.emoji}</span>
+                            <h3 class="font-bold text-stone-900 text-sm sm:text-base leading-snug">${card.headline}</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold shrink-0 ${badgeStyles[card.color] || badgeStyles.green}">
+                            ${card.tag}
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${card.dishes.map(d => `<span class="px-3 py-1 rounded-full bg-white border border-stone-200/80 text-xs font-medium text-stone-700">${d}</span>`).join('')}
+                    </div>
+                `;
+                listContainer.appendChild(itemEl);
+            });
+
+            showScreen('results-screen');
+        }
+    </script>
+</body>
+</html>
